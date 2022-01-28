@@ -20,7 +20,7 @@ data = pd.read_csv('data/distance_0deg_1.csv', header=None)
 data = data[0].astype(float)
 rad = data.to_numpy()
 
-theta = (np.linspace(-135,135,811)*np.pi/180.0).tolist()
+theta = (np.linspace(-45,225,811)*np.pi/180.0).tolist()
 
 plt.figure()
 plt.polar(theta,rad,'b.')

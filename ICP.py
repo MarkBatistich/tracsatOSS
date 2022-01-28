@@ -2,11 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 from math import sin, cos, atan2, pi
+
+#This implements the functions required to run the iterative closest point algorithm
 #Much guidance from: https://nbviewer.org/github/niosus/notebooks/blob/master/icp.ipynb
+
+iterations = 2;
 
 #Associate each point in P with the closest point in Q
 #This is a brute force algorithm, running in O(n^2)
 #Consider a better option for the future
+
 def associatePoints(P, Q):
     pSize = len(P[0])
     qSize = len(Q[0])
@@ -24,7 +29,7 @@ def associatePoints(P, Q):
                 minDistance = distance
                 minIndex = j
         associations.append((i, minIndex))
-    print(pPoint, centroidP)
+    #print(pPoint, centroidP)
     return associations
 
 def plotPoints(data1, data2, label1, label2, markersize_1=8, markersize_2=8):
@@ -66,39 +71,66 @@ def findOptimalTransformation(P, Q, associations):
     S_new = np.array([[1, 0], [0, np.linalg.det(U)*np.linalg.det(VT)]])
     rotation = U @ S_new @ VT
     translation = centroidQ - rotation.T @ centroidP
+    #print(translation)
     return rotation, translation
 
-#P = np.array([[1, 1, 3], [1, 3, 3]])
-#Q = np.array([[1.5, 2.5, 4], [1.25, 2.5, 2]])
+def icp(P,Q):
+    C = np.identity(2)
+    T = np.zeros((2, 1))
+    for i in range(iterations):
+        associations = associatePoints(P,Q)
+        rotation, translation = findOptimalTransformation(P, Q, associations)
+        P = rotation.T @ P + translation
+        T = rotation.T @ T
+        C = C @ rotation
+        T = T + translation
+        prevTranslation = translation
+    return C, T
+
+def angleOfRot(C):
+    return atan2(C[0,1], C[0,0])
+
+def createPointList(rad, theta):
+    x = rad*np.cos(theta)
+    y = rad*np.sin(theta)
+    points = np.vstack((x,y))
+    return points
+
+
 # initialize pertrubation rotation
-angle = pi / 4
-R_true = np.array([[cos(angle), -sin(angle)],
-                   [sin(angle),  cos(angle)]])
-t_true = np.array([[-2], [5]])
-
-# Generate data as a list of 2d points
-num_points = 30
-true_data = np.zeros((2, num_points))
-true_data[0, :] = range(0, num_points)
-true_data[1, :] = 0.2 * true_data[0, :] * np.sin(0.5 * true_data[0, :])
-# Move the data
-moved_data = R_true.dot(true_data) + t_true
-
-# Assign to variables we use in formulas.
-Q = true_data
-P = moved_data
-
-ax = plotPoints(P, Q, "P", "Q")
-associations = associatePoints(P,Q)
-drawAssociations(P, Q, associations, ax)
-rotation, translation = findOptimalTransformation(P, Q, associations)
-print(rotation, translation)
-P2 = rotation.T @ P + translation
-ax = plotPoints(P2, Q, label1='P2', label2='Q')
-associations = associatePoints(P2,Q)
-drawAssociations(P2, Q, associations, ax)
-rotation, translation = findOptimalTransformation(P2, Q, associations)
-print(rotation, translation)
-P3 = rotation.T @ P2 + translation
-ax = plotPoints(P3, Q, label1='P3', label2='Q')
-plt.show()
+# angle = pi / 4
+# R_true = np.array([[cos(angle), -sin(angle)],
+#                    [sin(angle),  cos(angle)]])
+# t_true = np.array([[-2], [5]])
+#
+# # Generate data as a list of 2d points
+# num_points = 30
+# true_data = np.zeros((2, num_points))
+# true_data[0, :] = range(0, num_points)
+# true_data[1, :] = 0.2 * true_data[0, :] * np.sin(0.5 * true_data[0, :])
+# # Move the data
+# moved_data = R_true.dot(true_data) + t_true
+#
+# # Assign to variables we use in formulas.
+# Q = true_data
+# P = moved_data
+#
+# C,T = icp(P,Q)
+# print(C)
+# print(T)
+#
+# P2 = C.T @ P + T
+# ax = plotPoints(P2, Q, label1='Pnew', label2='Q')
+#
+# # ax = plotPoints(P, Q, "P", "Q")
+# # associations = associatePoints(P,Q)
+# # drawAssociations(P, Q, associations, ax)
+# # rotation, translation = findOptimalTransformation(P, Q, associations)
+# # P2 = rotation.T @ P + translation
+# # ax = plotPoints(P2, Q, label1='P2', label2='Q')
+# # associations = associatePoints(P2,Q)
+# # drawAssociations(P2, Q, associations, ax)
+# # rotation, translation = findOptimalTransformation(P2, Q, associations)
+# # P3 = rotation.T @ P2 + translation
+# # ax = plotPoints(P3, Q, label1='P3', label2='Q')
+# plt.show()
