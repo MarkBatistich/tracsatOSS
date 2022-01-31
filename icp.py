@@ -45,6 +45,23 @@ def plotPoints(data1, data2, label1, label2, markersize_1=8, markersize_2=8):
     ax.legend()
     return ax
 
+def plotPointsK(data1, data2, data1k, data2k, label1, label2, markersize_1=8, markersize_2=8):
+    fig = plt.figure(figsize=(10, 6))
+    ax = fig.add_subplot(111)
+    ax.axis('equal')
+    if data1 is not None:
+        x_p, y_p = data1
+        ax.plot(x_p, y_p, color='#336699', markersize=markersize_1, marker='o', linestyle="", label=label1)
+    if data2 is not None:
+        x_q, y_q = data2
+        ax.plot(x_q, y_q, color='orangered', markersize=markersize_2, marker='o', linestyle="", label=label2)
+    ax.plot(data1k[0,:],data1k[1,:], color='#336699', markersize=markersize_1*2, marker='x', linestyle="", label="Cluster " + label1)
+    ax.plot(data2k[0,:],data2k[1,:], color='orangered', markersize=markersize_1*2, marker='x', linestyle="", label="Cluster " + label2)
+    plt.xlabel("x [m]")
+    plt.ylabel("y [m]")
+    ax.legend()
+    return ax
+
 def drawAssociations(P, Q, associations, ax):
     label_added = False
     for i, j in associations:
