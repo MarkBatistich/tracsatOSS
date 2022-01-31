@@ -6,7 +6,7 @@ from math import sin, cos, atan2, pi
 #This implements the functions required to run the iterative closest point algorithm
 #Much guidance from: https://nbviewer.org/github/niosus/notebooks/blob/master/icp.ipynb
 
-iterations = 2;
+iterations = 5;
 
 #Associate each point in P with the closest point in Q
 #This is a brute force algorithm, running in O(n^2)
