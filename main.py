@@ -3,10 +3,13 @@ import filters as f
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import Table
 from sklearn.cluster import KMeans
 
 # P = np.array([[1, 1, 3], [1, 3, 3]])
 # Q = np.array([[1.5, 2.5, 4], [1.25, 2.5, 2]])
+
+table = Table.Table()
 
 data = pd.read_csv('icpData/icp2.csv', header=None)
 data = data[0].astype(float)
@@ -71,5 +74,7 @@ ax = icp.plotPointsK(P2, Q, Pk2, Qk, "t2", "t1")
 plt.title('ICP pose matching')
 plt.text(-.2, 1.2, "Displacement: {} m, {} m".format(T[0],T[1]), fontsize=12)
 plt.text(-.2, 1.1, "Angle Change: {} deg".format(angle), fontsize=12)
+table.plotPoles(ax)
+table.plotWalls(ax)
 
 plt.show()
